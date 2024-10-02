@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https:d3js.org/d3.v7.min.js"></script>
+    <title>Scatter Plots</title>
+    <link rel="stylesheet" href="./style/site.css">
+    <link rel="stylesheet" href="./menuStyles.css">
+</head>
+
+<body>
+
+    <nav>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+        </ul>
+    </nav>
+
+    <h1>Scatter Plot showing Life Expectancy against GDP<h1>
+
+    <!-- SVG where scatter plot will be rendered -->
+    <svg width="500" height="500" style="background-color: white;" class="scatterPlot"></svg>
+
+
+
+    <script>
+         //Grouping Elements => 'g':
+        const body = d3.select("body");
+        const margins = { top: 5, right: 20, bottom: 100, left: 5 };
+        const svg = d3.select("svg.scatterPlot");
+
+        const width = svg.attr("width");
+        const height = svg.attr("height");
+
+        const chartWidth = width - (margins.left + margins.right);
+        const chartHeight = height - (margins.top + margins.bottom);
+
+        // Fetching and Processing Data:
+        let chartArea = svg.append("g")
+            .attr("transform", `translate(${margins.left + 65},${margins.top})`);
+
+        d3.csv("./datasets/gapminder.csv").then((data) => {
+            // Convert strings to numbers and remove commas from population data
+            data.forEach((d) => {
+                d.gdpPercap = Number(d.gdpPercap);
+                d.lifeExp = Number(d.lifeExp);
+                d.pop = Number(d.pop.replace(/,/g, ""));
+            });
+
+            //filters missing data
+            data=data.filter( (d)=> d.gdpPercap!=0 && d.lifeExp !=0 && d.pop !=0);
+
+            // Scale Definitions
+            let gdpExtent = d3.extent(data, d => d.gdpPercap);
+            let gdpScale = d3.scaleLinear()
+                .domain(gdpExtent)
+                .range([0, chartWidth]);
+
+            let lifeExtent = d3.extent(data, d => d.lifeExp);
+            let lifeScale = d3.scaleLinear()
+                .domain(lifeExtent)
+                .range([chartHeight, 0]);
+
+            let popExtent = d3.extent(data, d => d.pop);
+            let popScale = d3.scaleLinear()
+                .domain(popExtent)
+                .range([5, 15]);
+
+            // Axis Definitions
+            let leftAxis = d3.axisLeft(lifeScale);
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", `translate(${margins.left + 50},${margins.top})`)
+                .call(leftAxis);
+
+            let bottomAxis = d3.axisBottom(gdpScale).ticks(6);
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", `translate(${margins.left + 50},${chartHeight + 20})`)
+                .call(bottomAxis);
+
+            // Creating Gridlines
+            let rowGrid = d3.axisLeft(lifeScale).tickFormat("").tickSize(-chartWidth);
+            svg.append("g")
+                .attr("class", "x gridline")
+                .attr("transform", `translate(${margins.left + 50},${margins.top})`)
+                .call(rowGrid);
+
+            let colGrid = d3.axisBottom(gdpScale).tickFormat("").tickSize(-chartHeight - 20);
+            svg.append("g")
+                .attr("class", "y gridline")
+                .attr("transform", `translate(${margins.left + 50},${chartHeight + 20})`)
+                .call(colGrid);
+
+            // Plotting Data Points
+            data.forEach((d, i) => {
+                chartArea.append("circle")
+                    .attr("cx", gdpScale(d.gdpPercap))
+                    .attr("cy", lifeScale(d.lifeExp))
+                    .attr("r", popScale(d.pop))
+                    .attr("opacity", 0.8)
+                    .attr("index", i)
+                    .attr("fill", "black");
+            });
+
+
+            // X-axis label
+            svg.append("text")
+                .attr("class", "x label")
+                .attr("x", width / 2)
+                .attr("y", height - 10)
+                .style("text-anchor", "middle")
+                .text("GDP per Capita");
+
+            // Y-axis label
+            svg.append("text")
+                .attr("class", "y label")
+                .attr("transform", "rotate(-90)")
+                //The y-axis label is rotated by -90 degrees to make it vertical. The label 
+                //is centered along the y-axis by setting the x attribute to -height / 2 
+                //(since we are rotating it, the x controls the vertical positioning). The y attribute is set to 20 to position it to the left of the y-axis.
+                .attr("x", -height / 2)
+                .attr("y", 20)
+                .style("text-anchor", "middle")
+                .text("Life Expectancy");
+
+
+            chartArea.raise();
+        });
+    </script>
+
+    <!-- Displaying the code under the hood -->
+    <h2>Code Under the Hood</h2>
+    <pre><code>
+   <span class="tag">&lt;!DOCTYPE html&gt;</span>
+   <span class="tag">&lt;html</span> <span class="attr-name">lang=</span><span class="attr-value">"en"</span><span class="tag">&gt;</span>
+   <span class="tag">&lt;head&gt;</span>
+       <span class="tag">&lt;meta</span> <span class="attr-name">charset=</span><span class="attr-value">"UTF-8"</span><span class="tag">&gt;</span>
+       <span class="tag">&lt;meta</span> <span class="attr-name">name=</span><span class="attr-value">"viewport"</span> <span class="attr-name">content=</span><span class="attr-value">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+       <span class="tag">&lt;script</span> <span class="attr-name">src=</span><span class="attr-value">"https://d3js.org/d3.v7.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+       <span class="tag">&lt;title&gt;</span>Scatter Plots<span class="tag">&lt;/title&gt;</span>
+   <span class="tag">&lt;/head&gt;</span>
+   <span class="tag">&lt;body&gt;</span>
+
+       <span class="tag">&lt;svg</span> <span class="attr-name">width=</span><span class="attr-value">"500"</span> <span class="attr-name">height=</span><span class="attr-value">"500"</span> <span class="attr-name">style=</span><span class="attr-value">"background-color: yellow;"</span> <span class="attr-name">class=</span><span class="attr-value">"scatterPlot"</span><span class="tag">&gt;&lt;/svg&gt;</span>
+
+       <span class="tag">&lt;script&gt;</span>
+           <span class="comment">/**</span>
+           <span class="comment"> * Grouping Elements =&gt; 'g': </span>
+           <span class="comment"> * It allows you to group a set of SVG elements together so that they can be manipulated as a single unit. </span>
+           <span class="comment"> * For example, if you want to apply transformations (like translations, rotations, or scaling) to multiple </span>
+           <span class="comment"> * shapes, you can group them under a &lt;g&gt; tag and then apply the transformation to the group.</span>
+           <span class="comment"> */</span>
+           <span class="keyword">const</span> body = d3.select(<span class="string">"body"</span>);
+           <span class="keyword">const</span> margins = { top: <span class="number">5</span>, right: <span class="number">20</span>, bottom: <span class="number">100</span>, left: <span class="number">5</span> };
+           <span class="keyword">const</span> svg = d3.select(<span class="string">"svg.scatterPlot"</span>);
+
+           <span class="keyword">const</span> width = svg.attr(<span class="string">"width"</span>);
+           <span class="keyword">const</span> height = svg.attr(<span class="string">"height"</span>);
+
+           <span class="keyword">const</span> chartWidth = width - (margins.left + margins.right);
+           <span class="keyword">const</span> chartHeight = height - (margins.top + margins.bottom);
+
+           <span class="comment">/**
+           * Fetching and Processing Data:
+           * Asynchronous operations, like fetching data from a URL, don't immediately resolve. 
+           * Instead of halting the entire program while waiting for the data to arrive, JavaScript 
+           * continues executing other code. This prevents the browser from freezing.
+           * 
+           * The Fetch API returns a Promise. The .then() function allows you to specify 
+           * what should happen once the Promise resolves (i.e., the data is successfully retrieved). 
+           */</span>
+           let chartArea = svg.append(<span class="string">"g"</span>)
+               .attr(<span class="string">"transform"</span>, <span class="string">`translate(${margins.left + 65},${margins.top})`</span>);
+
+           d3.csv(<span class="string">"./datasets/gapminder.csv"</span>).then((data) => {
+
+               <span class="comment">Convert strings to numbers and remove commas from population data</span>
+               data.forEach((d) => {
+                   d.gdpPercap = <span class="keyword">Number</span>(d.gdpPercap);
+                   d.lifeExp = <span class="keyword">Number</span>(d.lifeExp);
+                   d.pop = <span class="keyword">Number</span>(d.pop.replace(/,/g, <span class="string">""</span>));
+               });
+
+               <span class="comment"> filters missing data</span>
+               data=data.filter( (d)=> d.gdpPercap!=0 && d.lifeExp !=0 && d.pop !=0);
+
+               <span class="comment">/**
+                * Scale Definitions:
+                * Scales map data values to pixel values. Here we map GDP to the x-axis, life expectancy to the y-axis,
+                * and population size to circle radius.
+                */</span>
+               <span class="keyword">let</span> gdpExtent = d3.extent(data, d => d.gdpPercap);
+               <span class="keyword">let</span> gdpScale = d3.scaleLinear()
+                   .domain(gdpExtent)
+                   .range([<span class="number">0</span>, chartWidth]);
+
+               <span class="keyword">let</span> lifeExtent = d3.extent(data, d => d.lifeExp);
+               <span class="keyword">let</span> lifeScale = d3.scaleLinear()
+                   .domain(lifeExtent)
+                   .range([chartHeight, <span class="number">0</span>]);
+
+               <span class="keyword">let</span> popExtent = d3.extent(data, d => d.pop);
+               <span class="keyword">let</span> popScale = d3.scaleLinear()
+                   .domain(popExtent)
+                   .range([<span class="number">5</span>, <span class="number">15</span>]); <span class="comment"> Smallest population has radius of 5, largest has radius of 15.</span>
+
+               <span class="comment">/**
+                * Axis Definitions:
+                * Axes are created by defining scales and appending them to &lt;g&gt; elements.
+                */</span>
+               <span class="keyword">let</span> leftAxis = d3.axisLeft(lifeScale);
+
+               svg.append(<span class="string">"g"</span>)
+                   .attr(<span class="string">"class"</span>, <span class="string">"y axis"</span>)
+                   .attr(<span class="string">"transform"</span>, <span class="string">`translate(${margins.left + 50},${margins.top})`</span>) <span class="comment"> Adjust for margins. By default the scales might be out of the svg area, so we add margins to its left and top to move it</span>
+                   .call(leftAxis);
+
+               <span class="keyword">let</span> bottomAxis = d3.axisBottom(gdpScale).ticks(<span class="number">6</span>); <span class="comment"> Adds six ticks along the bottom axis.</span>
+               svg.append(<span class="string">"g"</span>)
+                   .attr(<span class="string">"class"</span>, <span class="string">"x axis"</span>)
+                   .attr(<span class="string">"transform"</span>, <span class="string">`translate(${margins.left + 50},${chartHeight + 20})`</span>) <span class="comment"> Position at bottom, by default it is rendered at the top</span>
+                   .call(bottomAxis);
+
+               <span class="comment">/**
+                * Creating Gridlines:
+                * We generate gridlines by extending the tick marks across the chart area using negative tick sizes.
+                */</span>
+               <span class="keyword">let</span> rowGrid = d3.axisLeft(lifeScale).tickFormat(<span class="string">""</span>).tickSize(-chartWidth);
+               svg.append(<span class="string">"g"</span>)
+                   .attr(<span class="string">"class"</span>, <span class="string">"x gridLine"</span>)
+                   .attr(<span class="string">"transform"</span>, <span class="string">`translate(${margins.left + 50},${margins.top})`</span>)
+                   .call(rowGrid);
+
+               <span class="keyword">let</span> colGrid = d3.axisBottom(gdpScale).tickFormat(<span class="string">""</span>).tickSize(-chartHeight - <span class="number">20</span>);
+               svg.append(<span class="string">"g"</span>)
+                   .attr(<span class="string">"class"</span>, <span class="string">"y gridline"</span>)
+                   .attr(<span class="string">"transform"</span>, <span class="string">`translate(${margins.left + 50},${chartHeight + 20})`</span>)
+                   .call(colGrid);
+
+               <span class="comment">/**
+                * Plotting Data Points:
+                * We use the scales to map data points onto the chart, setting the position (cx, cy) and size (r) of each circle.
+                */</span>
+               data.forEach((d, i) => {
+                   chartArea.append(<span class="string">"circle"</span>)
+                       .attr(<span class="string">"cx"</span>, gdpScale(d.gdpPercap))
+                       .attr(<span class="string">"cy"</span>, lifeScale(d.lifeExp))
+                       .attr(<span class="string">"r"</span>, popScale(d.pop))
+                       .attr(<span class="string">"opacity"</span>, <span class="number">0.8</span>)
+                       .attr(<span class="string">"index"</span>, i) <span class="comment"> Adds an index for easier debugging.</span>
+                       .attr(<span class="string">"fill"</span>, <span class="string">"black"</span>);
+               });
+
+               <span class="comment">X-axis label</span> 
+               svg.append("text")
+                   .attr("class", "x label")
+                   .attr("x", width / 2)
+                   .attr("y", height - 10)
+                   .style("text-anchor", "middle")
+                   .text("GDP per Capita");
+   
+               <span class="comment">Y-axis label</span>
+               svg.append("text")
+                   .attr("class", "y label")
+                   .attr("transform", "rotate(-90)")
+                   <span class="comment">The y-axis label is rotated by -90 degrees to make it vertical. The label is centered
+                    along the y-axis by setting the x attribute to -height / 2 since we are rotating it, the x controls the vertical positioning. 
+                    The y attribute is set to 20 to position it to the left of the y-axis.</span>
+                   .attr("x", -height / 2)
+                   .attr("y", 20)
+                   .style("text-anchor", "middle")
+                   .text("Life Expectancy");
+               chartArea.raise();
+           });
+      
+       <span class="tag">&lt;/script&gt;</span>
+
+   <span class="tag">&lt;/body&gt;</span>
+   <span class="tag">&lt;/html&gt;</span>
+   </code></pre>
+
+</body>
+
+</html>

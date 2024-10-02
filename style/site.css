@@ -1,0 +1,67 @@
+/* General dark mode styling */
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+h1, h2 {
+    color: #569cd6;
+}
+
+svg {
+    border: 1px solid #fff;
+}
+
+/* Pre/code block styling to look like VSCode dark mode */
+pre {
+    background-color: #1e1e1e;
+    padding: 10px;
+    border: 1px solid #333;
+    color: #d4d4d4;
+    font-size: 14px;
+    overflow-x: auto;
+}
+.gridline{
+    color: blue;
+}
+
+g text{
+    color: #180a75;
+}
+
+code {
+    display: block;
+    color: #d4d4d4;
+    white-space: pre;
+}
+
+/* Syntax highlighting */
+.tag {
+    color: #569cd6;
+}
+
+.attr-name {
+    color: #9cdcfe;
+}
+
+.attr-value {
+    color: #ce9178;
+}
+
+.comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.keyword {
+    color: #c586c0;
+}
+
+.string {
+    color: #ce9178;
+}
+
+.number {
+    color: #b5cea8;
+}

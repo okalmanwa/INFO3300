@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Scatter Plots</title>
+
+    <link rel="stylesheet" href="./menuStyles.css">
+    <link rel="stylesheet" href="./style/site.css">
+</head>
+
+<body>
+
+    <nav>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+        </ul>
+    </nav>
+
+    <style>
+        .svg1 {
+            border: 1px solid black;
+        }
+
+        .svg2 {
+            border: 1px solid black;
+        }
+
+        body {
+            background-color: white !important;
+        }
+    </style>
+
+    <!-- First SVG: Shapes and Text -->
+    <svg class="svg1" width="400" height="400"></svg>
+
+    <!-- Second SVG: Scatter Plot with Gridlines -->
+    <svg class="svg2" width="360" height="360"></svg>
+
+    <script>
+        /** 
+         * First SVG (svg1): Drawing shapes and text inside the SVG container
+         */
+        let svg1 = d3.select(".svg1");
+
+        // Append a circle with label
+        svg1.append("circle")
+            .attr("cx", 200)
+            .attr("cy", 200)
+            .attr("r", 10)
+            .attr("fill", "lightgrey");
+
+        svg1.append("text")
+            .text("Carey")
+            .attr("x", 200)
+            .attr("y", 205)
+            .attr("text-anchor", "middle")
+            .attr("fill", "darkblue")
+            .style("font-family", "Courier")
+            .style("font-size", "30px");
+
+        // Append two rectangles with different styles
+        svg1.append("rect")
+            .attr("x", 50)
+            .attr("y", 50)
+            .attr("width", 80)
+            .attr("height", 80)
+            .attr("fill", "lightcoral")
+            .attr("stroke", "black")
+            .attr("stroke-width", 3);
+
+        svg1.append("rect")
+            .attr("x", 270)
+            .attr("y", 270)
+            .attr("width", 100)
+            .attr("height", 50)
+            .attr("fill", "lightgreen")
+            .attr("stroke", "darkgreen")
+            .attr("stroke-width", 3);
+
+        // Append a custom polygon path (pentagon)
+        svg1.append("path")
+            .attr("d", "M 300 80 L 350 100 L 330 160 L 270 160 L 250 100 Z")
+            .attr("fill", "lightblue")
+            .attr("stroke", "blue")
+            .attr("stroke-width", 2);
+    </script>
+
+    <script>
+        /** 
+         * Second SVG (svg2): Plotting scatter data with gridlines
+         */
+        const data = [
+            { "x": 1.0, "y": 9.0 },
+            { "x": 1.5, "y": 6.0 },
+            { "x": 2.5, "y": 4.0 },
+            { "x": 4.0, "y": 2.0 },
+            { "x": 5.0, "y": 1.6 },
+            { "x": 6.0, "y": 2.4 },
+            { "x": 7.0, "y": 3.0 },
+            { "x": 8.0, "y": 3.4 },
+            { "x": 9.0, "y": 3.6 }
+        ];
+
+        const svg2 = d3.select(".svg2");
+        const width = 360;
+        const height = 360;
+        const padding = 20;
+        // Using d3.extent to get the minimum and maximum for x and y
+        const xExtent = d3.extent(data, d => d.x); // Returns [minX, maxX]
+        const yExtent = d3.extent(data, d => d.y); // Returns [minY, maxY]
+
+        // Defining scales with d3.extent
+        const xScale = d3.scaleLinear()
+            .domain(xExtent) // Automatically sets the domain using d3.extent
+            .range([padding, width - padding]);
+
+        const yScale = d3.scaleLinear()
+            .domain(yExtent) // Automatically sets the domain using d3.extent
+            .range([height - padding, padding]);
+
+        // Draw gridlines for both axes
+        for (let i = 0; i <= 10; i++) {
+            // Horizontal gridlines
+            svg2.append("line")
+                .attr("x1", padding)
+                .attr("x2", width - padding)
+                .attr("y1", yScale(i))
+                .attr("y2", yScale(i))
+                .attr("stroke", "grey")
+                .attr("stroke-width", 1);
+
+            // Vertical gridlines
+            svg2.append("line")
+                .attr("x1", xScale(i))
+                .attr("x2", xScale(i))
+                .attr("y1", padding)
+                .attr("y2", height - padding)
+                .attr("stroke", "grey")
+                .attr("stroke-width", 1);
+        }
+
+        // Plot data points on the scatter plot
+        data.forEach(d => {
+            svg2.append("circle")
+                .attr("cx", xScale(d.x))
+                .attr("cy", yScale(d.y))
+                .attr("r", 10)
+                .attr("fill", "indigo");
+        });
+    </script>
+
+    <!-- Displaying the code under the hood -->
+    <h2>Code Under the Hood</h2>
+    <pre><code>
+<span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr-name">lang=</span><span class="attr-value">"en"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr-name">charset=</span><span class="attr-value">"UTF-8"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr-name">name=</span><span class="attr-value">"viewport"</span> <span class="attr-name">content=</span><span class="attr-value">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr-name">src=</span><span class="attr-value">"https://d3js.org/d3.v7.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Scatter Plots<span class="tag">&lt;/title&gt;</span>
+    <span class="tag">&lt;link</span> <span class="attr-name">rel=</span><span class="attr-value">"stylesheet"</span> <span class="attr-name">href=</span><span class="attr-value">"./menuStyles.css"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;link</span> <span class="attr-name">rel=</span><span class="attr-value">"stylesheet"</span> <span class="attr-name">href=</span><span class="attr-value">"./style/site.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+
+    <span class="tag">&lt;nav&gt;</span>
+        <span class="tag">&lt;ul</span> <span class="attr-name">class=</span><span class="attr-value">"menu"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;li&gt;</span><span class="tag">&lt;a</span> <span class="attr-name">href=</span><span class="attr-value">"index.html"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+        <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+
+    <span class="tag">&lt;svg</span> <span class="attr-name">class=</span><span class="attr-value">"svg1"</span> <span class="attr-name">width=</span><span class="attr-value">"400"</span> <span class="attr-name">height=</span><span class="attr-value">"400"</span><span class="tag">&gt;&lt;/svg&gt;</span>
+
+    <span class="tag">&lt;svg</span> <span class="attr-name">class=</span><span class="attr-value">"svg2"</span> <span class="attr-name">width=</span><span class="attr-value">"360"</span> <span class="attr-name">height=</span><span class="attr-value">"360"</span><span class="tag">&gt;&lt;/svg&gt;</span>
+
+    <span class="tag">&lt;script&gt;</span>
+        <span class="comment">/** First SVG: Drawing shapes and text inside the SVG container */</span>
+        <span class="keyword">let</span> svg1 = d3.select(<span class="string">".svg1"</span>);
+        svg1.append(<span class="string">"circle"</span>)
+            .attr(<span class="string">"cx"</span>, <span class="number">200</span>)
+            .attr(<span class="string">"cy"</span>, <span class="number">200</span>)
+            .attr(<span class="string">"r"</span>, <span class="number">10</span>)
+            .attr(<span class="string">"fill"</span>, <span class="string">"lightgrey"</span>);
+        
+        svg1.append(<span class="string">"text"</span>)
+            .text(<span class="string">"Carey"</span>)
+            .attr(<span class="string">"x"</span>, <span class="number">200</span>)
+            .attr(<span class="string">"y"</span>, <span class="number">205</span>)
+            .attr(<span class="string">"text-anchor"</span>, <span class="string">"middle"</span>)
+            .attr(<span class="string">"fill"</span>, <span class="string">"darkblue"</span>)
+            .style(<span class="string">"font-family"</span>, <span class="string">"Courier"</span>)
+            .style(<span class="string">"font-size"</span>, <span class="string">"30px"</span>);
+        
+        svg1.append(<span class="string">"rect"</span>)
+            .attr(<span class="string">"x"</span>, <span class="number">50</span>)
+            .attr(<span class="string">"y"</span>, <span class="number">50</span>)
+            .attr(<span class="string">"width"</span>, <span class="number">80</span>)
+            .attr(<span class="string">"height"</span>, <span class="number">80</span>)
+            .attr(<span class="string">"fill"</span>, <span class="string">"lightcoral"</span>)
+            .attr(<span class="string">"stroke"</span>, <span class="string">"black"</span>)
+            .attr(<span class="string">"stroke-width"</span>, <span class="number">3</span>);
+        
+        svg1.append(<span class="string">"rect"</span>)
+            .attr(<span class="string">"x"</span>, <span class="number">270</span>)
+            .attr(<span class="string">"y"</span>, <span class="number">270</span>)
+            .attr(<span class="string">"width"</span>, <span class="number">100</span>)
+            .attr(<span class="string">"height"</span>, <span class="number">50</span>)
+            .attr(<span class="string">"fill"</span>, <span class="string">"lightgreen"</span>)
+            .attr(<span class="string">"stroke"</span>, <span class="string">"darkgreen"</span>)
+            .attr(<span class="string">"stroke-width"</span>, <span class="number">3</span>);
+        
+        svg1.append(<span class="string">"path"</span>)
+            .attr(<span class="string">"d"</span>, <span class="string">"M 300 80 L 350 100 L 330 160 L 270 160 L 250 100 Z"</span>)
+            .attr(<span class="string">"fill"</span>, <span class="string">"lightblue"</span>)
+            .attr(<span class="string">"stroke"</span>, <span class="string">"blue"</span>)
+            .attr(<span class="string">"stroke-width"</span>, <span class="number">2</span>);
+        
+        <span class="comment">/** Second SVG: Plotting scatter data with gridlines */</span>
+        <span class="keyword">const</span> data = [
+            {"x": <span class="number">1.0</span>, "y": <span class="number">9.0</span>},
+            {"x": <span class="number">1.5</span>, "y": <span class="number">6.0</span>},
+            ...
+        ];
+        
+        <span class="keyword">const</span> svg2 = d3.select(<span class="string">".svg2"</span>);
+        <span class="keyword">const</span> width = <span class="number">360</span>;
+        <span class="keyword">const</span> height = <span class="number">360</span>;
+        <span class="keyword">const</span> padding = <span class="number">20</span>;
+        
+        <span class="keyword">const</span> xScale = d3.scaleLinear()
+            .domain([<span class="number">0</span>, <span class="number">10</span>])
+            .range([padding, width - padding]);
+        
+        <span class="keyword">const</span> yScale = d3.scaleLinear()
+            .domain([<span class="number">0</span>, <span class="number">10</span>])
+            .range([height - padding, padding]);
+        
+        <span class="comment">/** Draw gridlines for both axes */</span>
+        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt;= <span class="number">10</span>; i++) {
+            svg2.append(<span class="string">"line"</span>)
+                .attr(<span class="string">"x1"</span>, padding)
+                .attr(<span class="string">"x2"</span>, width - padding)
+                .attr(<span class="string">"y1"</span>, yScale(i))
+                .attr(<span class="string">"y2"</span>, yScale(i))
+                .attr(<span class="string">"stroke"</span>, <span class="string">"grey"</span>)
+                .attr(<span class="string">"stroke-width"</span>, <span class="number">1</span>);
+        
+            svg2.append(<span class="string">"line"</span>)
+                .attr(<span class="string">"x1"</span>, xScale(i))
+                .attr(<span class="string">"x2"</span>, xScale(i))
+                .attr(<span class="string">"y1"</span>, padding)
+                .attr(<span class="string">"y2"</span>, height - padding)
+                .attr(<span class="string">"stroke"</span>, <span class="string">"grey"</span>)
+                .attr(<span class="string">"stroke-width"</span>, <span class="number">1</span>);
+        }
+        
+        <span class="comment">/** Plot data points on the scatter plot */</span>
+        data.forEach(d => {
+            svg2.append(<span class="string">"circle"</span>)
+                .attr(<span class="string">"cx"</span>, xScale(d.x))
+                .attr(<span class="string">"cy"</span>, yScale(d.y))
+                .attr(<span class="string">"r"</span>, <span class="number">10</span>)
+                .attr(<span class="string">"fill"</span>, <span class="string">"indigo"</span>);
+        });
+    <span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span>
+    </code></pre>
+
+</body>
+
+</html>

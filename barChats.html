@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https:d3js.org/d3.v7.min.js"></script>
+    <title>Scatter Plots</title>
+    <link rel="stylesheet" href="./style/site.css">
+    <link rel="stylesheet" href="./menuStyles.css">
+</head>
+
+<body>
+
+    <nav>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+        </ul>
+    </nav>
+
+    <h1>Titanic Female Passengers' Survival Rates by Age</h1>
+
+    <!-- SVG where the bar chart will be rendered -->
+    <svg width="500" height="500" style="background-color: cyan;"></svg>
+
+    <script>
+        // Data: Binned data of Titanic passengers (female)
+        passengersFemale = [
+            { "age": 0, "lived": 10, "died": 6 },
+            { "age": 5, "lived": 12, "died": 3 },
+            { "age": 10, "lived": 5, "died": 8 },
+            { "age": 15, "lived": 23, "died": 5 },
+            { "age": 20, "lived": 48, "died": 21 },
+            { "age": 25, "lived": 42, "died": 14 },
+            { "age": 30, "lived": 83, "died": 47 },
+            { "age": 35, "lived": 35, "died": 5 },
+            { "age": 40, "lived": 21, "died": 7 },
+            { "age": 45, "lived": 17, "died": 6 },
+            { "age": 50, "lived": 18, "died": 2 },
+            { "age": 55, "lived": 11, "died": 1 },
+            { "age": 60, "lived": 9, "died": 1 },
+            { "age": 65, "lived": 4, "died": 1 },
+            { "age": 70, "lived": 0, "died": 0 },
+            { "age": 75, "lived": 1, "died": 0 },
+            { "age": 80, "lived": 0, "died": 0 }
+        ];
+
+        // Setup the SVG canvas dimensions
+        let svg = d3.select("svg")
+            .attr("width", "500")
+            .attr("height", "500")
+            .style("background-color", "cyan");
+
+        let width = svg.attr("width");
+        let height = svg.attr("height");
+
+        // Calculate percentage survived for each age group
+        passengersFemale.forEach(d => {
+            if (d.lived + d.died === 0) d.percentageSurvived = 0;
+            else d.percentageSurvived = Math.round((d.lived / (d.lived + d.died)) * 100, 0);
+        });
+
+        // Calculate the extent (min and max) for age
+        let ageExtent = d3.extent(passengersFemale, d => d.age);
+
+        // Define the scales for the x (age) and y (percentage survived) axes
+        let ageScale = d3.scaleLinear()
+            .domain(ageExtent) // Use d3.extent to set the domain
+            .range([50, width - 50]);
+
+        let livedScalePercentage = d3.scaleLinear()
+            .domain([0, 100])
+            .range([height - 50, 10]);
+
+        // Plot the bars for each age group based on percentage survived
+        passengersFemale.forEach(d => {
+            svg.append("line")
+                .attr("x1", ageScale(d.age))
+                .attr("x2", ageScale(d.age))
+                .attr("y1", livedScalePercentage(0))
+                .attr("y2", livedScalePercentage(d.percentageSurvived))
+                .attr("stroke-width", 20)
+                .attr("stroke", "orange");
+
+            // Label the bars with the percentage survived
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr("x", ageScale(d.age))
+                .attr("y", livedScalePercentage(d.percentageSurvived))
+                .text(d.percentageSurvived + "%");
+        });
+    </script>
+
+    <!-- Displaying the code under the hood -->
+    <h2>Code Under the Hood</h2>
+    <pre><code>
+   <span class="tag">&lt;!DOCTYPE html&gt;</span>
+   <span class="tag">&lt;html</span> <span class="attr-name">lang=</span><span class="attr-value">"en"</span><span class="tag">&gt;</span>
+   <span class="tag">&lt;head&gt;</span>
+       <span class="tag">&lt;meta</span> <span class="attr-name">charset=</span><span class="attr-value">"UTF-8"</span><span class="tag">&gt;</span>
+       <span class="tag">&lt;meta</span> <span class="attr-name">name=</span><span class="attr-value">"viewport"</span> <span class="attr-name">content=</span><span class="attr-value">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+       <span class="tag">&lt;script</span> <span class="attr-name">src=</span><span class="attr-value">"https://d3js.org/d3.v7.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+       <span class="tag">&lt;title&gt;</span>Titanic Survival Visualization<span class="tag">&lt;/title&gt;</span>
+   <span class="tag">&lt;/head&gt;</span>
+   <span class="tag">&lt;body&gt;</span>
+
+       <span class="tag">&lt;svg</span> <span class="attr-name">width=</span><span class="attr-value">"500"</span> <span class="attr-name">height=</span><span class="attr-value">"500"</span> <span class="attr-name">style=</span><span class="attr-value">"background-color: cyan;"</span><span class="tag">&gt;&lt;/svg&gt;</span>
+
+       <span class="tag">&lt;script&gt;</span>
+           <span class="comment">/**</span>
+           <span class="comment"> * Titanic Female Passengers' Survival Data</span>
+           <span class="comment"> * This script calculates and visualizes the survival percentage</span>
+           <span class="comment"> * of female passengers by age group.</span>
+           <span class="comment"> */</span>
+           <span class="keyword">passengersFemale</span> = [
+               {"age": <span class="number">0</span>, "lived": <span class="number">10</span>, "died": <span class="number">6</span>},
+               {"age": <span class="number">5</span>, "lived": <span class="number">12</span>, "died": <span class="number">3</span>},
+               ...
+           ];
+
+           <span class="comment">/**</span>
+           <span class="comment"> * Set up the SVG canvas</span>
+           <span class="comment"> */</span>
+           <span class="keyword">let</span> svg = d3.select(<span class="string">"svg"</span>)
+               .attr(<span class="string">"width"</span>, <span class="string">"500"</span>)
+               .attr(<span class="string">"height"</span>, <span class="string">"500"</span>)
+               .style(<span class="string">"background-color"</span>, <span class="string">"cyan"</span>);
+
+           <span class="comment">/**</span>
+           <span class="comment"> * Calculate the percentage of passengers that survived for each age group.</span>
+           <span class="comment"> */</span>
+           passengersFemale.forEach(d => {
+               <span class="keyword">if</span> (d.lived + d.died === <span class="number">0</span>) d.percentageSurvived = <span class="number">0</span>;
+               <span class="keyword">else</span> d.percentageSurvived = Math.round((d.lived / (d.lived + d.died)) * <span class="number">100</span>, <span class="number">0</span>);
+           });
+
+           <span class="comment">/**</span>
+           <span class="comment"> * Define the scales for the age and percentage survived axes.</span>
+           <span class="comment"> */</span>
+           <span class="comment">Calculate the extent (min and max) for age</span>
+           let ageExtent = d3.extent(passengersFemale, d => d.age);
+   
+           <span class="comment">Define the scales for the x (age) and y (percentage survived) axes</span>
+           let ageScale = d3.scaleLinear()
+               .domain(ageExtent) // Use d3.extent to set the domain
+               .range([50, width - 50]);
+   
+           let livedScalePercentage = d3.scaleLinear()
+               .domain([0, 100])
+               .range([height - 50, 10]);
+           <span class="comment">/**</span>
+           <span class="comment"> * Create vertical bars for each age group.</span>
+           <span class="comment"> */</span>
+           passengersFemale.forEach(d => {
+               svg.append(<span class="string">"line"</span>)
+                   .attr(<span class="string">"x1"</span>, ageScale(d.age))
+                   .attr(<span class="string">"x2"</span>, ageScale(d.age))
+                   .attr(<span class="string">"y1"</span>, livedScalePercentage(<span class="number">0</span>))
+                   .attr(<span class="string">"y2"</span>, livedScalePercentage(d.percentageSurvived))
+                   .attr(<span class="string">"stroke-width"</span>, <span class="number">20</span>)
+                   .attr(<span class="string">"stroke"</span>, <span class="string">"orange"</span>);
+
+               svg.append(<span class="string">"text"</span>)
+                   .attr(<span class="string">"text-anchor"</span>, <span class="string">"middle"</span>)
+                   .attr(<span class="string">"font-size"</span>, <span class="string">"10px"</span>)
+                   .attr(<span class="string">"x"</span>, ageScale(d.age))
+                   .attr(<span class="string">"y"</span>, livedScalePercentage(d.percentageSurvived))
+                   .text(d.percentageSurvived + <span class="string">"%</span>);
+           });
+       <span class="tag">&lt;/script&gt;</span>
+
+   <span class="tag">&lt;/body&gt;</span>
+   <span class="tag">&lt;/html&gt;</span>
+   </code></pre>
+
+</body>
+
+</html>
